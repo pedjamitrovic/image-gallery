@@ -2,16 +2,43 @@
 	appDropZone
 	class="image-upload-container"
 	[ngClass]="{'file-over': isFileOver}"
-	(isFileOver)="isFileOver = $event"
+	(isFileOver)="setIsFileOver($event)"
 	(fileListDropped)="fileListDropped($event)"
+	(click)="signatureInput.click()"
 >
+	<input
+		#signatureInput
+		(change)="handleFileInput($event)"
+		type="file"
+		name="file"
+		id="file"
+		class="file-input"
+		accept="image/*"
+		hidden
+	>
 	<div class="message-box">
 		<ng-container [ngSwitch]="state">
-			<div *ngSwitchCase="0">
-				Drop image here or click to upload image
+			<div *ngSwitchCase="'initial'">
+				Drop image here or click to upload image.
 			</div>
-			<div *ngSwitchCase="1">Uploading image</div>
-			<div *ngSwitchCase="2">Success</div>
+			<div *ngSwitchCase="'file_over'">
+				Drop image here.
+			</div>
+			<div *ngSwitchCase="'invalid_type'">
+				Invalid file type. Only image files are allowed.
+			</div>
+			<div *ngSwitchCase="'uploading'">
+        Uploading
+			</div>
+			<div *ngSwitchCase="'duplicate'">
+				Error. Image is duplicate.
+			</div>
+			<div *ngSwitchCase="'error'">
+				Unexpected error ocurred.
+			</div>
+			<div *ngSwitchCase="'success'">
+				Image successfully uploaded.
+			</div>
 		</ng-container>
 	</div>
 </div>
