@@ -1,1 +1,17 @@
-<p>image-upload works!</p>
+<div
+	appDropZone
+	class="image-upload-container"
+	[ngClass]="{'file-over': isFileOver}"
+	(isFileOver)="isFileOver = $event"
+	(fileListDropped)="fileListDropped($event)"
+>
+	<div class="message-box">
+		<ng-container [ngSwitch]="state">
+			<div *ngSwitchCase="0">
+				Drop image here or click to upload image
+			</div>
+			<div *ngSwitchCase="1">Uploading image</div>
+			<div *ngSwitchCase="2">Success</div>
+		</ng-container>
+	</div>
+</div>

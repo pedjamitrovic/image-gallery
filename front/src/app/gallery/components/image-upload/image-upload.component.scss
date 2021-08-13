@@ -1,0 +1,15 @@
+.image-upload-container {
+  min-height: 200px;
+  border: 2px dashed black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all ease-in-out 200ms;
+  .message-box {
+  }
+}
+.file-over {
+  background-color: lightgray;
+  border: 2px solid black;
+  transition: all ease-in-out 200ms;
+}
