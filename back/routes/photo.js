@@ -9,10 +9,32 @@ const photos = [
     { name: 'MyImage.jpg', path: 'https://wallpapercave.com/wp/wp2559551.jpg', thumbnailPath: 'https://wallpapercave.com/wp/wp2559551.jpg' },
     { name: 'MyImage.jpg', path: 'https://wallpapercave.com/wp/wp2559551.jpg', thumbnailPath: 'https://wallpapercave.com/wp/wp2559551.jpg' },
     { name: 'MyImage.jpg', path: 'https://wallpapercave.com/wp/wp2559551.jpg', thumbnailPath: 'https://wallpapercave.com/wp/wp2559551.jpg' },
+    { name: 'MyImage.jpg', path: 'https://wallpapercave.com/wp/wp2559551.jpg', thumbnailPath: 'https://wallpapercave.com/wp/wp2559551.jpg' },
+    { name: 'MyImage.jpg', path: 'https://wallpapercave.com/wp/wp2559551.jpg', thumbnailPath: 'https://wallpapercave.com/wp/wp2559551.jpg' },
+    { name: 'MyImage.jpg', path: 'https://wallpapercave.com/wp/wp2559551.jpg', thumbnailPath: 'https://wallpapercave.com/wp/wp2559551.jpg' },
+    { name: 'MyImage.jpg', path: 'https://wallpapercave.com/wp/wp2559551.jpg', thumbnailPath: 'https://wallpapercave.com/wp/wp2559551.jpg' },
+    { name: 'MyImage.jpg', path: 'https://wallpapercave.com/wp/wp2559551.jpg', thumbnailPath: 'https://wallpapercave.com/wp/wp2559551.jpg' },
+    { name: 'MyImage.jpg', path: 'https://wallpapercave.com/wp/wp2559551.jpg', thumbnailPath: 'https://wallpapercave.com/wp/wp2559551.jpg' },
 ];
 
-router.get('/photos', function (req, res, next) {
-    res.json(photos);
+router.get('/photos', (req, res, next) => {
+    const pageSize = isNaN(req.query.pageSize) ? 10 : +req.query.pageSize;
+    const page = isNaN(req.query.page) ? 1 : +req.query.page;
+
+    const response = {
+        totalCount: photos.length,
+        pageSize,
+        page,
+        items: photos.slice((page - 1) * pageSize, page * pageSize),
+    };
+
+    if (photos.length % pageSize === 0) {
+        response.totalPages = photos.length / pageSize;
+    } else {
+        response.totalPages = Math.floor(photos.length / pageSize) + 1;
+    }
+
+    res.json(response);
 });
 
 module.exports = router;
