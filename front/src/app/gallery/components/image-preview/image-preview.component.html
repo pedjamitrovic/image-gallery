@@ -1,0 +1,22 @@
+<div class="image-preview-toolbar">
+	<a
+		class="action-button"
+		mat-icon-button
+		color="primary"
+		[matTooltip]="'Open in new tab'"
+		target="_blank"
+		[href]="imgSrc"
+	>
+		<mat-icon [inline]="true">open_in_new</mat-icon>
+	</a>
+	<button
+		class="action-button"
+		mat-icon-button
+		color="primary"
+		[matTooltip]="'Close'"
+		(click)="close()"
+	>
+		<mat-icon [inline]="true">highlight_off</mat-icon>
+	</button>
+</div>
+<img class="image-preview" [src]="imgSrc" draggable="false">

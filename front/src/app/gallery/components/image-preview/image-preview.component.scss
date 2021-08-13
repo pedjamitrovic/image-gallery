@@ -1,0 +1,32 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: auto;
+}
+
+.image-preview-toolbar {
+  padding: 0 5px;
+  height: 50px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  color: #fff;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.65) 0, transparent);
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.image-preview {
+  max-height: calc(95vh - 50px);
+  max-width: 100%;
+  user-select: none;
+}
+
+.action-button {
+  font-size: 36px;
+  color: white;
+}

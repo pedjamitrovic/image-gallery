@@ -8,7 +8,7 @@
   .thumbnail-wrapper {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, max-content));
-    grid-gap: 5px;
+    grid-gap: 10px;
     justify-content: center;
   }
 }

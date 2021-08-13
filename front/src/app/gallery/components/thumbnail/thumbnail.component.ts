@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Image } from '../../models/image.model';
+import { ImagePreviewService } from '../../services/image-preview.service';
 
 @Component({
   selector: 'app-thumbnail',
@@ -9,9 +10,15 @@ import { Image } from '../../models/image.model';
 export class ThumbnailComponent implements OnInit {
   @Input() image: Image;
 
-  constructor() { }
+  constructor(
+    private imagePreviewService: ImagePreviewService,
+  ) { }
 
   ngOnInit(): void {
+  }
+
+  openImagePreview() {
+    this.imagePreviewService.open(this.image.path);
   }
 
 }
