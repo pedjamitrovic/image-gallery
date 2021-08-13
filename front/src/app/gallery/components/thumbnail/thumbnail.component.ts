@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { Image } from '../../models/image.model';
 
 @Component({
   selector: 'app-thumbnail',
@@ -6,6 +7,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./thumbnail.component.scss']
 })
 export class ThumbnailComponent implements OnInit {
+  @Input() image: Image;
 
   constructor() { }
 

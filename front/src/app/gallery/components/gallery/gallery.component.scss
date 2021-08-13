@@ -1,0 +1,13 @@
+.gallery-container {
+  text-align: center;
+  padding: 10px;
+  .image-upload-wrapper{
+
+  }
+  .thumbnail-wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, max-content));
+    grid-gap: 5px;
+    justify-content: center;
+  }
+}
