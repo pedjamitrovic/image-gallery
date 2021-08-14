@@ -1,6 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { fromEvent, timer } from 'rxjs';
+import { HttpEvent, HttpEventType } from '@angular/common/http';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { timer } from 'rxjs';
 import { ImageUploadState } from '../../models/image-upload-state.model';
+import { GalleryService } from '../../services/gallery.service';
+import { Image } from '../../models/image.model';
 
 @Component({
   selector: 'app-image-upload',
@@ -8,23 +11,32 @@ import { ImageUploadState } from '../../models/image-upload-state.model';
   styleUrls: ['./image-upload.component.scss']
 })
 export class ImageUploadComponent implements OnInit {
-  state = ImageUploadState.INITIAL;
-  isFileOver = false;
-  messageTimeout = 3000;
+  @Output() imageUploaded = new EventEmitter<Image>();
 
-  constructor() { }
+  state = ImageUploadState.INITIAL;
+  uploadProgress = 0;
+  isFileOver = false;
+  messageTimeout = 2000;
+
+  constructor(
+    private galleryService: GalleryService,
+  ) { }
 
   ngOnInit(): void {
   }
 
   fileListDropped(fileList: FileList) {
-    console.log(fileList);
+    if (this.state !== ImageUploadState.INITIAL || !fileList.length) { return; }
+    this.uploadPhoto(fileList.item(0));
   }
 
   handleFileInput(event: Event) {
     const input = event.target as HTMLInputElement;
 
-    if (!input?.files || !input.files[0]) { return; }
+    if (this.state !== ImageUploadState.INITIAL || !input?.files || !input.files[0]) {
+      input.value = '';
+      return;
+    }
 
     const fileType = input.files[0].type;
 
@@ -35,7 +47,9 @@ export class ImageUploadComponent implements OnInit {
       return;
     }
 
-    console.log(input.files);
+    this.uploadPhoto(input.files[0]);
+
+    input.value = '';
   }
 
   setInitialState() {
@@ -49,5 +63,26 @@ export class ImageUploadComponent implements OnInit {
     } else {
       this.state = ImageUploadState.INITIAL;
     }
+  }
+
+  uploadPhoto(file: File) {
+    this.uploadProgress = 0;
+    this.galleryService.uploadPhoto(file).subscribe(
+      (event: HttpEvent<any>) => {
+        switch (event.type) {
+          case HttpEventType.Sent:
+            this.state = ImageUploadState.UPLOADING;
+            break;
+          case HttpEventType.UploadProgress:
+            this.uploadProgress = Math.round(event.loaded / event.total * 100);
+            break;
+          case HttpEventType.Response:
+            this.state = ImageUploadState.SUCCESS;
+            this.setInitialState();
+            this.imageUploaded.emit(event.body);
+            break;
+        }
+      }
+    );
   }
 }

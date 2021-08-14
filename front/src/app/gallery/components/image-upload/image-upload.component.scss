@@ -5,6 +5,13 @@
   justify-content: center;
   align-items: center;
   transition: all ease-in-out 200ms;
+  .message-box {
+    width: 100%;
+    padding: 10px;
+    .progress-bar {
+      margin-top: 10px;
+    }
+  }
 }
 .image-upload-container:hover {
   cursor: pointer;

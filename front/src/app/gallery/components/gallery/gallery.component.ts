@@ -33,5 +33,12 @@ export class GalleryComponent implements OnInit {
       .subscribe((imageList) => this.imageList = imageList);
   }
 
+  imageUploaded(image: Image) {
+    console.log(image);
+    this.page = 1;
+    this.dateTo = new Date();
+    this.getPhotos();
+  }
+
 }
 

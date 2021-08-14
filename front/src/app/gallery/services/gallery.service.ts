@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpEvent, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Image } from '../models/image.model';
 import { PagedList } from '../models/paged-list.model';
@@ -19,5 +19,18 @@ export class GalleryService {
   getList(queryParams?: any) {
     const params = this.commonHttpService.parseParams(queryParams);
     return this.http.get<PagedList<Image>>(`${this.apiUrl}/photos`, { params });
+  }
+
+  uploadPhoto(file: File) {
+    const formData: any = new FormData();
+    formData.append("photo", file);
+    return this.http.post(
+      `${this.apiUrl}/photos`,
+      formData,
+      {
+        reportProgress: true,
+        observe: 'events'
+      }
+    );
   }
 }

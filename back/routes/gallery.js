@@ -6,7 +6,6 @@ const imageThumbnail = require('image-thumbnail');
 const imageHash = require('node-image-hash');
 const config = require('../config');
 const StormDB = require("stormdb");
-const { thumbnailRelativePath } = require('../config');
 
 const upload = multer({
     dest: config.tempImagePath,
@@ -74,6 +73,8 @@ router.post("/photos", upload.single("photo"), async (req, res) => {
     const targetPath = path.join(targetDir, file.originalname);
     const thumbnailDir = path.join(targetDir, config.thumbnailPath);
     const thumbnailPath = path.join(thumbnailDir, file.originalname);
+
+    console.log(targetDir, targetPath, thumbnailDir, thumbnailPath,)
 
     if (!fs.existsSync(targetDir)) {
         fs.mkdirSync(targetDir);

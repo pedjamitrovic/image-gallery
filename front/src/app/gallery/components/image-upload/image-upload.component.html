@@ -8,7 +8,7 @@
 >
 	<input
 		#signatureInput
-		(change)="handleFileInput($event)"
+		(input)="handleFileInput($event)"
 		type="file"
 		name="file"
 		id="file"
@@ -40,5 +40,6 @@
 				Image successfully uploaded.
 			</div>
 		</ng-container>
+    <mat-progress-bar class="progress-bar" *ngIf="state === 'uploading' || state === 'success'" mode="determinate" [value]="uploadProgress"></mat-progress-bar>
 	</div>
 </div>
