@@ -49,7 +49,9 @@ export class GalleryComponent implements OnInit, OnDestroy {
 
   imageUploaded() {
     this.dateTo = new Date();
-    this.paginator.firstPage();
+    if (this.paginator) {
+      this.paginator.firstPage();
+    }
     this.getPhotos(1);
   }
 
@@ -104,7 +106,6 @@ export class GalleryComponent implements OnInit, OnDestroy {
   openImagePreview(image: Image) {
     const pageImageIndex = this.imageList.items.findIndex((i) => i === image);
     const startImageIndex = (this.imageList.page - 1) * this.imageList.pageSize + pageImageIndex + 1;
-    console.log(startImageIndex, this.dateTo);
     this.imagePreviewService.open(startImageIndex, this.dateTo);
   }
 
