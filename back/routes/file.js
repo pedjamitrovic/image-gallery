@@ -1,9 +1,11 @@
 const express = require('express');
 const path = require("path");
+const config = require('../config');
+
 const router = express.Router();
 
 router.get("/*", (req, res) => {
-	res.sendFile(path.join(__dirname, "../uploads", req.url.substring(1)));
+	return res.sendFile(path.join(config.imagePath, req.url.substring(1)));
 });
 
 module.exports = router;
