@@ -20,6 +20,7 @@
 		<app-thumbnail
 			*ngFor="let image of imageList?.items"
 			[image]="image"
+      (imageClicked)="openImagePreview($event)"
 		></app-thumbnail>
 	</div>
   <div *ngIf="imageList?.totalCount > 0" class="paginator-container">

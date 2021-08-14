@@ -5,6 +5,7 @@ import { GalleryService } from '../../services/gallery.service';
 import { finalize, mergeMap } from 'rxjs/operators';
 import { interval, Subscription } from 'rxjs';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { ImagePreviewService } from '../../services/image-preview.service';
 
 @Component({
   selector: 'app-gallery',
@@ -24,6 +25,7 @@ export class GalleryComponent implements OnInit, OnDestroy {
 
   constructor(
     private galleryService: GalleryService,
+    private imagePreviewService: ImagePreviewService,
   ) { }
 
   ngOnInit() {
@@ -67,6 +69,7 @@ export class GalleryComponent implements OnInit, OnDestroy {
           if (this.imageList.page === 1) {
             // Refresh items if user is on first page
             this.imageList = imageList;
+            this.dateTo = new Date();
           } else {
             // Inform user that he can refresh items
             this.newestList = imageList;
@@ -95,6 +98,14 @@ export class GalleryComponent implements OnInit, OnDestroy {
     }
 
     this.getPhotos(event.pageIndex + 1);
+  }
+
+
+  openImagePreview(image: Image) {
+    const pageImageIndex = this.imageList.items.findIndex((i) => i === image);
+    const startImageIndex = (this.imageList.page - 1) * this.imageList.pageSize + pageImageIndex + 1;
+    console.log(startImageIndex, this.dateTo);
+    this.imagePreviewService.open(startImageIndex, this.dateTo);
   }
 
 }

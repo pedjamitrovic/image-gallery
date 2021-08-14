@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Image } from '../../models/image.model';
 import { EnvironmentService } from '../../services/environment.service';
 import { ImagePreviewService } from '../../services/image-preview.service';
@@ -10,17 +10,16 @@ import { ImagePreviewService } from '../../services/image-preview.service';
 })
 export class ThumbnailComponent implements OnInit {
   @Input() image: Image;
+  @Output() imageClicked = new EventEmitter<Image>();
 
   constructor(
     public environment: EnvironmentService,
-    private imagePreviewService: ImagePreviewService,
   ) { }
 
-  ngOnInit(): void {
+  ngOnInit() {
   }
 
-  openImagePreview() {
-    this.imagePreviewService.open(this.image);
+  emitImageClicked() {
+    this.imageClicked.emit(this.image);
   }
-
 }

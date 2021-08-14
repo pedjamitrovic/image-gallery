@@ -1,11 +1,12 @@
 <div class="image-preview-toolbar">
 	<a
+		[hidden]="loading || !image"
 		class="action-button"
 		mat-icon-button
 		color="primary"
 		[matTooltip]="'Open in new tab'"
 		target="_blank"
-		[href]="environment.apiUrl + '/file' + image.path"
+		[href]="environment.apiUrl + '/file' + image?.path"
 	>
 		<mat-icon [inline]="true">open_in_new</mat-icon>
 	</a>
@@ -19,4 +20,19 @@
 		<mat-icon [inline]="true">highlight_off</mat-icon>
 	</button>
 </div>
-<img class="image-preview" [src]="environment.apiUrl + '/file' + image.path" draggable="false">
+<img
+	*ngIf="image"
+	class="image-preview"
+	[src]="environment.apiUrl + '/file' + image.path"
+	draggable="false"
+>
+<div class="paginator-container">
+	<mat-paginator
+		[disabled]="loading"
+		[pageSize]="1"
+		[length]="imageList?.totalCount"
+		[showFirstLastButtons]="true"
+		[hidePageSize]="true"
+		(page)="pageChanged($event)"
+	></mat-paginator>
+</div>

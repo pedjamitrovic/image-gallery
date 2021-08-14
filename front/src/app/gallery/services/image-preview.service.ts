@@ -14,7 +14,7 @@ export class ImagePreviewService {
     private overlay: Overlay,
   ) { }
 
-  open(image: Image) {
+  open(startImageIndex: number, dateTo: Date) {
     if (this.activeImageOverlayRef) { this.close(); }
 
     const config = new OverlayConfig(
@@ -28,9 +28,11 @@ export class ImagePreviewService {
     this.activeImageOverlayRef = this.overlay.create(config);
     const imagePreviewPortal = new ComponentPortal(ImagePreviewComponent);
     const componentRef = this.activeImageOverlayRef.attach(imagePreviewPortal);
-    componentRef.instance.image = image;
-    componentRef.instance.closed.subscribe(() => this.close());
 
+    componentRef.instance.startImageIndex = startImageIndex;
+    componentRef.instance.dateTo = dateTo;
+
+    componentRef.instance.closed.subscribe(() => this.close());
     this.activeImageOverlayRef.backdropClick().subscribe(() => this.close());
     this.activeImageOverlayRef.keydownEvents().subscribe(
       (e) => {
