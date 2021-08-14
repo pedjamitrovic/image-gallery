@@ -1,6 +1,7 @@
 const express = require('express');
 
-const photo = require('./routes/photo');
+const gallery = require('./routes/gallery');
+const file = require('./routes/file');
 
 const app = express();
 
@@ -12,7 +13,8 @@ app.use(
     }
 );
 
-app.use('/gallery/v1', photo);
+app.use('/gallery/v1', gallery);
+app.use('/file/v1', file);
 
 app.listen(3000, () => { console.log('App listening on port 3000!'); });
 
