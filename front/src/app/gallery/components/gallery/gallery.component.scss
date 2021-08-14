@@ -1,9 +1,12 @@
 .gallery-container {
   text-align: center;
   padding: 10px;
-  .image-upload-wrapper{
+  .image-upload-wrapper {
     max-width: 800px;
     margin: 10px auto;
+  }
+  .new-images-button {
+    margin-bottom: 16px;
   }
   .thumbnail-wrapper {
     display: grid;

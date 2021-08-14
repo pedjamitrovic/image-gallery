@@ -4,6 +4,15 @@
 		<app-image-upload (imageUploaded)="imageUploaded($event)"></app-image-upload>
 	</div>
 	<h2>Previously uploaded images</h2>
+	<button
+		*ngIf="newestList"
+		class="new-images-button"
+		mat-button
+		color="primary"
+		(click)="loadNewestList()"
+	>
+		New images detected. Click to load them.
+	</button>
 	<div class="thumbnail-wrapper">
 		<div *ngIf="!loading && !imageList?.totalCount">
 			There are no images. Be first to upload!
