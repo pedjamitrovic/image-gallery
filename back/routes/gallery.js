@@ -10,6 +10,7 @@ const { thumbnailRelativePath } = require('../config');
 
 const upload = multer({
     dest: config.tempImagePath,
+
 });
 
 const engine = new StormDB.localFileEngine("./db.stormdb");
@@ -71,7 +72,7 @@ router.post("/photos", upload.single("photo"), async (req, res) => {
     */
     const targetDir = path.join(config.imagePath, fileHash.hash);
     const targetPath = path.join(targetDir, file.originalname);
-    const thumbnailDir = path.join(targetDir, config.thumbnailRelativePath);
+    const thumbnailDir = path.join(targetDir, config.thumbnailPath);
     const thumbnailPath = path.join(thumbnailDir, file.originalname);
 
     if (!fs.existsSync(targetDir)) {
@@ -84,7 +85,7 @@ router.post("/photos", upload.single("photo"), async (req, res) => {
 
     fs.renameSync(file.path, targetPath);
 
-    const thumbnail = await imageThumbnail(targetPath);
+    const thumbnail = await imageThumbnail(targetPath, { percentage: 50 });
 
     fs.writeFileSync(thumbnailPath, thumbnail);
 
@@ -92,8 +93,8 @@ router.post("/photos", upload.single("photo"), async (req, res) => {
         name: file.originalname,
         createdOn: (new Date()).toISOString(),
         hash: fileHash.hash,
-        path: ["file/v1", fileHash.hash, file.originalname].join('/'),
-        thumbnailPath: ["file/v1", fileHash.hash, thumbnailRelativePath, file.originalname].join('/')
+        path: ["/" + fileHash.hash, file.originalname].join('/'),
+        thumbnailPath: ["/" + fileHash.hash, config.thumbnailPath, file.originalname].join('/')
     }
 
     db.get("photos").push(photo).save();

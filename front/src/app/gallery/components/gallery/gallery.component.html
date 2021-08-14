@@ -1,10 +1,16 @@
 <div class="gallery-container">
-  <h2>Upload images to gallery</h2>
-  <div class="image-upload-wrapper">
-    <app-image-upload></app-image-upload>
-  </div>
-  <h2>Previously uploaded images</h2>
-  <div class="thumbnail-wrapper">
-    <app-thumbnail *ngFor="let image of images" [image]="image"></app-thumbnail>
-  </div>
+	<h2>Upload images to gallery</h2>
+	<div class="image-upload-wrapper">
+		<app-image-upload></app-image-upload>
+	</div>
+	<h2>Previously uploaded images</h2>
+	<div class="thumbnail-wrapper">
+		<div *ngIf="!loading && !imageList?.totalCount">
+			There are no images. Be first to upload!
+		</div>
+		<app-thumbnail
+			*ngFor="let image of imageList?.items"
+			[image]="image"
+		></app-thumbnail>
+	</div>
 </div>

@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { MaterialModule } from '../material/material.module';
 import { GalleryComponent } from './components/gallery/gallery.component';
@@ -18,6 +19,7 @@ import { DropZoneDirective } from './directives/drop-zone/drop-zone.directive';
   imports: [
     CommonModule,
     MaterialModule,
+    HttpClientModule,
   ]
 })
 export class GalleryModule { }

@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Image } from '../../models/image.model';
+import { PagedList } from '../../models/paged-list.model';
+import { GalleryService } from '../../services/gallery.service';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-gallery',
@@ -7,22 +10,28 @@ import { Image } from '../../models/image.model';
   styleUrls: ['./gallery.component.scss']
 })
 export class GalleryComponent implements OnInit {
-  images: Image[] = [
-    { name: 'MyImage.jpg', path: 'https://wallpapercave.com/wp/wp2559551.jpg', thumbnailPath: 'https://wallpapercave.com/wp/wp2559551.jpg' },
-    { name: 'MyImage.jpg', path: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500', thumbnailPath: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500' },
-    { name: 'MyImage.jpg', path: 'https://wallpapercave.com/wp/wp2559551.jpg', thumbnailPath: 'https://wallpapercave.com/wp/wp2559551.jpg' },
-    { name: 'MyImage.jpg', path: 'https://wallpapercave.com/wp/wp2559551.jpg', thumbnailPath: 'https://wallpapercave.com/wp/wp2559551.jpg' },
-    { name: 'MyImage.jpg', path: 'https://wallpapercave.com/wp/wp2559551.jpg', thumbnailPath: 'https://wallpapercave.com/wp/wp2559551.jpg' },
-    { name: 'MyImage.jpg', path: 'https://wallpapercave.com/wp/wp2559551.jpg', thumbnailPath: 'https://wallpapercave.com/wp/wp2559551.jpg' },
-    { name: 'MyImage.jpg', path: 'https://wallpapercave.com/wp/wp2559551.jpg', thumbnailPath: 'https://wallpapercave.com/wp/wp2559551.jpg' },
-    { name: 'MyImage.jpg', path: 'https://wallpapercave.com/wp/wp2559551.jpg', thumbnailPath: 'https://wallpapercave.com/wp/wp2559551.jpg' },
-    { name: 'MyImage.jpg', path: 'https://wallpapercave.com/wp/wp2559551.jpg', thumbnailPath: 'https://wallpapercave.com/wp/wp2559551.jpg' },
-    { name: 'MyImage.jpg', path: 'https://wallpapercave.com/wp/wp2559551.jpg', thumbnailPath: 'https://wallpapercave.com/wp/wp2559551.jpg' },
-  ];
+  imageList: PagedList<Image>;
+  page = 1;
+  dateTo = new Date();
+  loading = true;
 
-  constructor() { }
+  constructor(
+    private galleryService: GalleryService,
+  ) { }
 
-  ngOnInit(): void {
+  ngOnInit() {
+    this.getPhotos();
+  }
+
+  getPhotos() {
+    this.loading = true;
+
+    const params = { page: this.page, dateTo: this.dateTo.toISOString() };
+
+    this.galleryService.getList(params)
+      .pipe(finalize(() => this.loading = false))
+      .subscribe((imageList) => this.imageList = imageList);
   }
 
 }
+

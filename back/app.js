@@ -13,8 +13,8 @@ app.use(
     }
 );
 
-app.use('/gallery/v1', gallery);
-app.use('/file/v1', file);
+app.use('/gallery', gallery);
+app.use('/file', file);
 
 app.listen(3000, () => { console.log('App listening on port 3000!'); });
 

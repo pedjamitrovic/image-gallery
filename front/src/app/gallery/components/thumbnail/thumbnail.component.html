@@ -1,8 +1,16 @@
-<div class="thumbnail-container" (click)="openImagePreview()">
-  <img class="thumbnail-image mat-elevation-z1" [src]="image.thumbnailPath" [alt]="image.name" draggable="false"/>
-  <div class="thumbnail-info">
-    <div class="image-name">
-      <span>{{image.name}}</span>
-    </div>
-  </div>
+<div
+	class="thumbnail-container"
+	(click)="openImagePreview()"
+>
+	<img
+		class="thumbnail-image mat-elevation-z1"
+		[src]="environment.apiUrl + '/file' + image.thumbnailPath"
+		[alt]="image.name"
+		draggable="false"
+	>
+	<div class="thumbnail-info">
+		<div class="image-name">
+			<span>{{image.name}}</span>
+		</div>
+	</div>
 </div>
