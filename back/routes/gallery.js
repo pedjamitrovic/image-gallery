@@ -59,8 +59,7 @@ router.post("/photos", upload.single("photo"), async (req, res) => {
 
     const fileHash = await imageHash.syncHash(file.path, 8, 'hex');
     const duplicateImage = photos.find((i) => i.hash === fileHash.hash);
-    //if (duplicateImage) {
-    if (false) {
+    if (duplicateImage) {
         fs.unlinkSync(file.path);
         return res.status(403).json({ error: "duplicate", message: "Error occurred. Duplicate images are not allowed." });
     }

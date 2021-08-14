@@ -1,4 +1,4 @@
-import { HttpEvent, HttpEventType } from '@angular/common/http';
+import { HttpErrorResponse, HttpEvent, HttpEventType } from '@angular/common/http';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { timer } from 'rxjs';
 import { ImageUploadState } from '../../models/image-upload-state.model';
@@ -32,7 +32,7 @@ export class ImageUploadComponent implements OnInit {
 
     if (!this.isFileImage(file)) {
       this.state = ImageUploadState.INVALID_TYPE;
-      this.setInitialState();
+      this.scheduleInitialState();
       return;
     }
 
@@ -52,7 +52,7 @@ export class ImageUploadComponent implements OnInit {
     if (!this.isFileImage(file)) {
       this.state = ImageUploadState.INVALID_TYPE;
       input.value = '';
-      this.setInitialState();
+      this.scheduleInitialState();
       return;
     }
 
@@ -61,7 +61,7 @@ export class ImageUploadComponent implements OnInit {
     input.value = '';
   }
 
-  setInitialState() {
+  scheduleInitialState() {
     timer(this.messageTimeout).subscribe(() => { this.state = ImageUploadState.INITIAL });
   }
 
@@ -87,9 +87,21 @@ export class ImageUploadComponent implements OnInit {
             break;
           case HttpEventType.Response:
             this.state = ImageUploadState.SUCCESS;
-            this.setInitialState();
+            this.scheduleInitialState();
             this.imageUploaded.emit(event.body);
             break;
+        }
+      },
+      (err: HttpErrorResponse) => {
+        if (err.error?.error === 'duplicate') {
+          this.state = ImageUploadState.DUPLICATE;
+          this.scheduleInitialState();
+        } else if (err.error?.error === 'invalid_type') {
+          this.state = ImageUploadState.INVALID_TYPE;
+          this.scheduleInitialState();
+        } else {
+          this.state = ImageUploadState.ERROR;
+          this.scheduleInitialState();
         }
       }
     );
