@@ -2,6 +2,7 @@ const express = require('express');
 const path = require("path");
 const multer = require("multer");
 const fs = require("fs");
+const imageThumbnail = require('image-thumbnail');
 const upload = multer({
     dest: path.join(__dirname, "../uploads/temp"),
 });
@@ -51,7 +52,7 @@ router.get('/photos', (req, res, next) => {
     res.json(response);
 });
 
-router.post("/photos", upload.single("photo"), (req, res) => {
+router.post("/photos", upload.single("photo"), async (req, res) => {
     const file = req.file;
 
     if (!file.mimetype.startsWith("image/")) {
@@ -67,16 +68,23 @@ router.post("/photos", upload.single("photo"), (req, res) => {
     const tempPath = file.path;
     const targetPath = path.join(__dirname, "../uploads/1", file.originalname);
     const targetDir = targetPath.substring(0, targetPath.lastIndexOf("\\"));
+    const thumbnailDir = path.join(targetDir, '/thumbnail');
 
     if (!fs.existsSync(targetDir)) {
         fs.mkdirSync(targetDir);
     }
 
-    fs.rename(tempPath, targetPath, err => {
-        if (err) return next(err);
+    if (!fs.existsSync(thumbnailDir)) {
+        fs.mkdirSync(thumbnailDir);
+    }
 
-        res.status(200).json(PHOTOS[0]);
-    });
+    fs.renameSync(tempPath, targetPath);
+
+    const thumbnail = await imageThumbnail(targetPath);
+
+    fs.writeFileSync(path.join(thumbnailDir, file.originalname), thumbnail);
+
+    res.status(200).json(PHOTOS[0]);
 });
 
 module.exports = router;
