@@ -27,6 +27,15 @@ export class ImageUploadComponent implements OnInit {
 
   fileListDropped(fileList: FileList) {
     if (this.state !== ImageUploadState.INITIAL || !fileList.length) { return; }
+
+    const file = fileList.item(0);
+
+    if (!this.isFileImage(file)) {
+      this.state = ImageUploadState.INVALID_TYPE;
+      this.setInitialState();
+      return;
+    }
+
     this.uploadPhoto(fileList.item(0));
   }
 
@@ -38,16 +47,16 @@ export class ImageUploadComponent implements OnInit {
       return;
     }
 
-    const fileType = input.files[0].type;
+    const file = input.files[0];
 
-    if (!fileType.startsWith('image')) {
+    if (!this.isFileImage(file)) {
       this.state = ImageUploadState.INVALID_TYPE;
       input.value = '';
       this.setInitialState();
       return;
     }
 
-    this.uploadPhoto(input.files[0]);
+    this.uploadPhoto(file);
 
     input.value = '';
   }
@@ -84,5 +93,10 @@ export class ImageUploadComponent implements OnInit {
         }
       }
     );
+  }
+
+  private isFileImage(file: File) {
+    const fileType = file.type;
+    return fileType.startsWith('image');
   }
 }
