@@ -5,34 +5,27 @@ const fs = require("fs");
 const imageThumbnail = require('image-thumbnail');
 const imageHash = require('node-image-hash');
 const config = require('../config');
+const StormDB = require("stormdb");
+const { thumbnailRelativePath } = require('../config');
+
 const upload = multer({
     dest: config.tempImagePath,
 });
 
-const router = express.Router();
+const engine = new StormDB.localFileEngine("./db.stormdb");
+const db = new StormDB(engine);
+db.default({ photos: [] });
 
-const PHOTOS = [
-    { name: 'a.jpg', createdOn: '2021-08-14T06:48:19.424Z', hash: '403f6f10fe0042f8', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
-    { name: 'a.jpg', createdOn: '2021-08-14T06:48:19.424Z', hash: '403f6f10fe0042f8', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
-    { name: 'a.jpg', createdOn: '2021-08-14T06:48:19.424Z', hash: '403f6f10fe0042f8', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
-    { name: 'a.jpg', createdOn: '2021-08-14T06:48:19.424Z', hash: '403f6f10fe0042f8', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
-    { name: 'a.jpg', createdOn: '2021-08-14T06:48:19.424Z', hash: '403f6f10fe0042f8', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
-    { name: 'a.jpg', createdOn: '2021-08-14T06:48:19.424Z', hash: '403f6f10fe0042f8', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
-    { name: 'a.jpg', createdOn: '2021-08-14T06:48:19.424Z', hash: '403f6f10fe0042f8', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
-    { name: 'a.jpg', createdOn: '2021-08-14T06:48:19.424Z', hash: '403f6f10fe0042f8', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
-    { name: 'a.jpg', createdOn: '2021-08-14T06:48:19.424Z', hash: '403f6f10fe0042f8', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
-    { name: 'a.jpg', createdOn: '2021-08-14T10:48:19.424Z', hash: '403f6f10fe0042f8', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
-    { name: 'a.jpg', createdOn: '2021-08-14T10:48:19.424Z', hash: '403f6f10fe0042f8', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
-    { name: 'a.jpg', createdOn: '2021-08-14T10:48:19.424Z', hash: '403f6f10fe0042f8', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
-    { name: 'a.jpg', createdOn: '2021-08-14T10:48:19.424Z', hash: '403f6f10fe0042f8', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
-];
+const router = express.Router();
 
 router.get('/photos', (req, res) => {
     const pageSize = isNaN(req.query.pageSize) ? 10 : +req.query.pageSize;
     const page = isNaN(req.query.page) ? 1 : +req.query.page;
     const dateTo = isNaN(Date.parse(req.query.dateTo)) ? (new Date()).toISOString() : req.query.dateTo;
 
-    let photos = PHOTOS.sort((a, b) => -a.createdOn.localeCompare(b.createdOn));
+    let photos = db.get("photos").value();
+
+    photos = photos.sort((a, b) => -a.createdOn.localeCompare(b.createdOn));
 
     if (dateTo) {
         photos = photos.filter(p => p.createdOn <= dateTo);
@@ -62,16 +55,24 @@ router.post("/photos", upload.single("photo"), async (req, res) => {
         return res.status(403).json({ error: "invalid_type", message: "Invalid file type. Only image files are allowed." });
     }
 
-    const hash = await imageHash.syncHash(file.path, 8, 'hex');
-    const duplicateImage = PHOTOS.find((i) => i.hash === hash.hash);
-    if (duplicateImage) {
+    const photos = db.get("photos").value();
+
+    const fileHash = await imageHash.syncHash(file.path, 8, 'hex');
+    const duplicateImage = photos.find((i) => i.hash === fileHash.hash);
+    //if (duplicateImage) {
+    if (false) {
         fs.unlinkSync(file.path);
         return res.status(403).json({ error: "duplicate", message: "Error occurred. Duplicate images are not allowed." });
     }
 
-    const targetDir = path.join(config.imagePath, "1");
+    /* 
+        For simplicity, hash value is used as a subfolder to allow images with same name
+        If there was real db behind this, it could be unique id of image or guid
+    */
+    const targetDir = path.join(config.imagePath, fileHash.hash);
     const targetPath = path.join(targetDir, file.originalname);
     const thumbnailDir = path.join(targetDir, config.thumbnailRelativePath);
+    const thumbnailPath = path.join(thumbnailDir, file.originalname);
 
     if (!fs.existsSync(targetDir)) {
         fs.mkdirSync(targetDir);
@@ -85,9 +86,19 @@ router.post("/photos", upload.single("photo"), async (req, res) => {
 
     const thumbnail = await imageThumbnail(targetPath);
 
-    fs.writeFileSync(path.join(thumbnailDir, file.originalname), thumbnail);
+    fs.writeFileSync(thumbnailPath, thumbnail);
 
-    return res.status(200).json(PHOTOS[0]);
+    const photo = {
+        name: file.originalname,
+        createdOn: (new Date()).toISOString(),
+        hash: fileHash.hash,
+        path: ["file/v1", fileHash.hash, file.originalname].join('/'),
+        thumbnailPath: ["file/v1", fileHash.hash, thumbnailRelativePath, file.originalname].join('/')
+    }
+
+    db.get("photos").push(photo).save();
+
+    return res.status(200).json(photo);
 });
 
 module.exports = router;

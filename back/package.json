@@ -12,6 +12,7 @@
     "express": "^4.17.1",
     "image-thumbnail": "^1.0.13",
     "multer": "^1.4.3",
-    "node-image-hash": "^1.1.0"
+    "node-image-hash": "^1.1.0",
+    "stormdb": "^0.5.1"
   }
 }
