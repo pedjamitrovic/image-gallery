@@ -3,6 +3,7 @@ const path = require("path");
 const multer = require("multer");
 const fs = require("fs");
 const imageThumbnail = require('image-thumbnail');
+const imageHash = require('node-image-hash');
 const upload = multer({
     dest: path.join(__dirname, "../uploads/temp"),
 });
@@ -10,19 +11,19 @@ const upload = multer({
 const router = express.Router();
 
 const PHOTOS = [
-    { name: 'a.jpg', createdOn: '2021-08-14T06:48:19.424Z', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
-    { name: 'a.jpg', createdOn: '2021-08-14T06:48:19.424Z', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
-    { name: 'a.jpg', createdOn: '2021-08-14T06:48:19.424Z', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
-    { name: 'a.jpg', createdOn: '2021-08-14T06:48:19.424Z', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
-    { name: 'a.jpg', createdOn: '2021-08-14T06:48:19.424Z', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
-    { name: 'a.jpg', createdOn: '2021-08-14T06:48:19.424Z', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
-    { name: 'a.jpg', createdOn: '2021-08-14T06:48:19.424Z', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
-    { name: 'a.jpg', createdOn: '2021-08-14T06:48:19.424Z', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
-    { name: 'a.jpg', createdOn: '2021-08-14T06:48:19.424Z', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
-    { name: 'a.jpg', createdOn: '2021-08-14T10:48:19.424Z', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
-    { name: 'a.jpg', createdOn: '2021-08-14T10:48:19.424Z', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
-    { name: 'a.jpg', createdOn: '2021-08-14T10:48:19.424Z', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
-    { name: 'a.jpg', createdOn: '2021-08-14T10:48:19.424Z', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
+    { name: 'a.jpg', createdOn: '2021-08-14T06:48:19.424Z', hash: '403f6f10fe0042f8', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
+    { name: 'a.jpg', createdOn: '2021-08-14T06:48:19.424Z', hash: '403f6f10fe0042f8', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
+    { name: 'a.jpg', createdOn: '2021-08-14T06:48:19.424Z', hash: '403f6f10fe0042f8', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
+    { name: 'a.jpg', createdOn: '2021-08-14T06:48:19.424Z', hash: '403f6f10fe0042f8', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
+    { name: 'a.jpg', createdOn: '2021-08-14T06:48:19.424Z', hash: '403f6f10fe0042f8', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
+    { name: 'a.jpg', createdOn: '2021-08-14T06:48:19.424Z', hash: '403f6f10fe0042f8', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
+    { name: 'a.jpg', createdOn: '2021-08-14T06:48:19.424Z', hash: '403f6f10fe0042f8', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
+    { name: 'a.jpg', createdOn: '2021-08-14T06:48:19.424Z', hash: '403f6f10fe0042f8', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
+    { name: 'a.jpg', createdOn: '2021-08-14T06:48:19.424Z', hash: '403f6f10fe0042f8', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
+    { name: 'a.jpg', createdOn: '2021-08-14T10:48:19.424Z', hash: '403f6f10fe0042f8', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
+    { name: 'a.jpg', createdOn: '2021-08-14T10:48:19.424Z', hash: '403f6f10fe0042f8', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
+    { name: 'a.jpg', createdOn: '2021-08-14T10:48:19.424Z', hash: '403f6f10fe0042f8', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
+    { name: 'a.jpg', createdOn: '2021-08-14T10:48:19.424Z', hash: '403f6f10fe0042f8', path: '/file/v1/1/a.jpg', thumbnailPath: '/file/v1/1/a.jpg' },
 ];
 
 router.get('/photos', (req, res, next) => {
@@ -56,16 +57,23 @@ router.post("/photos", upload.single("photo"), async (req, res) => {
     const file = req.file;
 
     if (!file.mimetype.startsWith("image/")) {
-        fs.unlink(tempPath, (err) => {
+        fs.unlink(file.path, (err) => {
             if (err) return handleError(err, res);
 
-            res.status(403)
-                .contentType("text/plain")
-                .end("Only image files are allowed");
+            res.status(403).json({error: "invalid_type", message: "Invalid file type. Only image files are allowed."});
         });
     }
 
-    const tempPath = file.path;
+    const hash = await imageHash.syncHash(file.path, 8, 'hex');
+    const duplicateImage = PHOTOS.find((i) => i.hash === hash.hash);
+    if (duplicateImage) {
+        fs.unlink(file.path, (err) => {
+            if (err) return handleError(err, res);
+
+            res.status(403).json({error: "duplicate", message: "Error occurred. Duplicate images are not allowed."});
+        });
+    }
+
     const targetPath = path.join(__dirname, "../uploads/1", file.originalname);
     const targetDir = targetPath.substring(0, targetPath.lastIndexOf("\\"));
     const thumbnailDir = path.join(targetDir, '/thumbnail');
@@ -78,7 +86,7 @@ router.post("/photos", upload.single("photo"), async (req, res) => {
         fs.mkdirSync(thumbnailDir);
     }
 
-    fs.renameSync(tempPath, targetPath);
+    fs.renameSync(file.path, targetPath);
 
     const thumbnail = await imageThumbnail(targetPath);
 
