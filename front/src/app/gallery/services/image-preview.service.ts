@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { Overlay, OverlayConfig, OverlayRef } from '@angular/cdk/overlay';
 import { ImagePreviewComponent } from '../components/image-preview/image-preview.component';
+import { Image } from '../models/image.model';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,7 @@ export class ImagePreviewService {
     private overlay: Overlay,
   ) { }
 
-  open(imgSrc: string) {
+  open(image: Image) {
     if (this.activeImageOverlayRef) { this.close(); }
 
     const config = new OverlayConfig(
@@ -27,7 +28,7 @@ export class ImagePreviewService {
     this.activeImageOverlayRef = this.overlay.create(config);
     const imagePreviewPortal = new ComponentPortal(ImagePreviewComponent);
     const componentRef = this.activeImageOverlayRef.attach(imagePreviewPortal);
-    componentRef.instance.imgSrc = imgSrc;
+    componentRef.instance.image = image;
     componentRef.instance.closed.subscribe(() => this.close());
 
     this.activeImageOverlayRef.backdropClick().subscribe(() => this.close());

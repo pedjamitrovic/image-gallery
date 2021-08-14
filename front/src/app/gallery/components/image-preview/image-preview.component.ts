@@ -1,4 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Image } from '../../models/image.model';
+import { EnvironmentService } from '../../services/environment.service';
 
 @Component({
   selector: 'cif-image-preview',
@@ -6,10 +8,11 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
   styleUrls: ['./image-preview.component.scss']
 })
 export class ImagePreviewComponent implements OnInit {
-  @Input() imgSrc: string;
+  @Input() image: Image;
   @Output() closed = new EventEmitter<any>();
 
   constructor(
+    public environment: EnvironmentService,
   ) { }
 
   ngOnInit(): void {

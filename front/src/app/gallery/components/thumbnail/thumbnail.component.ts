@@ -20,7 +20,7 @@ export class ThumbnailComponent implements OnInit {
   }
 
   openImagePreview() {
-    this.imagePreviewService.open(this.image.path);
+    this.imagePreviewService.open(this.image);
   }
 
 }
