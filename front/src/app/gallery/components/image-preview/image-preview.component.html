@@ -30,6 +30,7 @@
 	<mat-paginator
 		[disabled]="loading"
 		[pageSize]="1"
+		[pageIndex]="startImageIndex - 1"
 		[length]="imageList?.totalCount"
 		[showFirstLastButtons]="true"
 		[hidePageSize]="true"
