@@ -1,7 +1,7 @@
 <div class="gallery-container">
 	<h2>Upload images to gallery</h2>
 	<div class="image-upload-wrapper">
-		<app-image-upload (imageUploaded)="imageUploaded($event)"></app-image-upload>
+		<app-image-upload (imageUploaded)="imageUploaded()"></app-image-upload>
 	</div>
 	<h2>Previously uploaded images</h2>
 	<button
@@ -22,4 +22,13 @@
 			[image]="image"
 		></app-thumbnail>
 	</div>
+  <div *ngIf="imageList?.totalCount > 0" class="paginator-container">
+    <mat-paginator
+      [pageSize]="imageList?.pageSize"
+      [length]="imageList?.totalCount"
+      [showFirstLastButtons]="true"
+      [hidePageSize]="true"
+      (page)="pageChanged($event)"
+    ></mat-paginator>
+  </div>
 </div>

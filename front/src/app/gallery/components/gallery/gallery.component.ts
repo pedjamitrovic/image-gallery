@@ -1,9 +1,10 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Image } from '../../models/image.model';
 import { PagedList } from '../../models/paged-list.model';
 import { GalleryService } from '../../services/gallery.service';
 import { finalize, mergeMap } from 'rxjs/operators';
 import { interval, Subscription } from 'rxjs';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-gallery',
@@ -18,6 +19,8 @@ export class GalleryComponent implements OnInit, OnDestroy {
   changeCheckSubscription: Subscription;
   newestList: PagedList<Image>;
   newestDateTo: Date;
+
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   constructor(
     private galleryService: GalleryService,
@@ -42,14 +45,15 @@ export class GalleryComponent implements OnInit, OnDestroy {
       .subscribe((imageList) => this.imageList = imageList);
   }
 
-  imageUploaded(image: Image) {
-    console.log(image);
+  imageUploaded() {
     this.dateTo = new Date();
+    this.paginator.firstPage();
     this.getPhotos(1);
   }
 
   initializeChangeListener() {
     if (this.changeCheckSubscription) { this.changeCheckSubscription.unsubscribe(); }
+
     this.changeCheckSubscription = interval(this.changeCheckInterval)
       .pipe(
         mergeMap(
@@ -76,8 +80,21 @@ export class GalleryComponent implements OnInit, OnDestroy {
     this.imageList = this.newestList;
     this.dateTo = this.newestDateTo;
 
+    this.paginator.firstPage();
+
     this.newestList = null;
     this.newestDateTo = null;
+  }
+
+  pageChanged(event: PageEvent) {
+    if (event.pageIndex === 0 && this.newestList) {
+      this.dateTo = this.newestDateTo;
+
+      this.newestList = null;
+      this.newestDateTo = null;
+    }
+
+    this.getPhotos(event.pageIndex + 1);
   }
 
 }

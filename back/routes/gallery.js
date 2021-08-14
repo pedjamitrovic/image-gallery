@@ -74,8 +74,6 @@ router.post("/photos", upload.single("photo"), async (req, res) => {
     const thumbnailDir = path.join(targetDir, config.thumbnailPath);
     const thumbnailPath = path.join(thumbnailDir, file.originalname);
 
-    console.log(targetDir, targetPath, thumbnailDir, thumbnailPath,)
-
     if (!fs.existsSync(targetDir)) {
         fs.mkdirSync(targetDir);
     }

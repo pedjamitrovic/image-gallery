@@ -14,4 +14,10 @@
     grid-gap: 10px;
     justify-content: center;
   }
+  .paginator-container {
+    .mat-paginator {
+      display: flex;
+      justify-content: center;
+    }
+  }
 }
